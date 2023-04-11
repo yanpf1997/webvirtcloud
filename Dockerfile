@@ -25,6 +25,7 @@ RUN apt-get update -qqy \
 	libssl-dev \
 	libsasl2-dev \
 	libsasl2-modules \
+	sudo \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY . /srv/webvirtcloud
@@ -34,17 +35,17 @@ RUN chown -R www-data:www-data /srv/webvirtcloud
 WORKDIR /srv/webvirtcloud
 RUN python3 -m venv venv && \
 	. venv/bin/activate && \
-	pip3 install -U pip && \
-	pip3 install wheel && \
-	pip3 install -r conf/requirements.txt && \
+	pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -U pip && \
+	pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple wheel && \
+	pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple -r conf/requirements.txt && \
 	pip3 cache purge && \
 	chown -R www-data:www-data /srv/webvirtcloud
 
-RUN . venv/bin/activate && \
-	python3 manage.py makemigrations && \
-    python3 manage.py migrate && \
-	python3 manage.py collectstatic --noinput && \
-	chown -R www-data:www-data /srv/webvirtcloud
+# RUN . venv/bin/activate && \
+# 	python3 manage.py makemigrations && \
+#     python3 manage.py migrate && \
+# 	python3 manage.py collectstatic --noinput && \
+# 	chown -R www-data:www-data /srv/webvirtcloud
 
 # Setup Nginx
 RUN printf "\n%s" "daemon off;" >> /etc/nginx/nginx.conf && \

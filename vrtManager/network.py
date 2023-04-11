@@ -107,6 +107,12 @@ class wvmNetworks(wvmConnect):
                     xml += """</dhcp>"""
                 xml += """</ip>"""
         xml += """</network>"""
+
+        try:
+            self.get_network(bridge)
+        except libvirtError:
+            xml = xml.replace("forward mode='bridge'", "forward mode='none'")
+
         self.define_network(xml)
         net = self.get_network(name)
         net.create()
